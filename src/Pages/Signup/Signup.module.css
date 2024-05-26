@@ -1,0 +1,100 @@
+.signupPage {
+  height: 100vh;
+  width: 100vw;
+}
+.header {
+  height: 7vh;
+  width: 100vw;
+}
+.footer {
+  height: 7vh;
+  width: 100vw;
+}
+.signupSection {
+  height: 86vh;
+  width: 100vw;
+  overflow: auto;
+  text-align: center;
+}
+.welcomeText {
+  text-align: center;
+  font-weight: bold;
+  font-size: 25px;
+  margin-top: 4vh;
+}
+.createAccount {
+  text-align: center;
+  font-weight: bold;
+  font-size: 25px;
+  margin-top: 4vh;
+}
+.form {
+  text-align: center;
+  font-weight: bold;
+  font-size: 22px;
+  margin-top: 3vh;
+}
+.fields {
+  display: inline-block;
+  width: 20vw;
+  text-align: left;
+  margin-top: 3vh;
+}
+.inputBox {
+  border: 2px solid black;
+  padding-left: 10px;
+  padding-right: 10px;
+  width: 20vw;
+  padding-top: 1vh;
+  padding-bottom: 1vh;
+  font-size: 16px;
+}
+.btn {
+  text-align: center;
+  background-color: black;
+  color: white;
+  border: none;
+  padding-top: 2vh;
+  padding-bottom: 2vh;
+  width: 15vw;
+  margin-top: 5vh;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 16px;
+  letter-spacing: 1px;
+}
+.haveAccountText {
+  font-weight: bold;
+  font-size: 22px;
+  margin-top: 4vh;
+  margin-bottom: 4vh;
+}
+.login {
+  cursor: pointer;
+}
+.error {
+  text-align: left;
+  color: red;
+  font-size: 17px;
+  margin-left: 49vw;
+  margin-top: 1vh;
+}
+.loaderContainer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.loaderBackground {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.1);
+}
