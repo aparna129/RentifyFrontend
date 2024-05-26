@@ -343,18 +343,16 @@ function PropertyList() {
         ))}
 
       <div style={{ textAlign: "center" }}>
-        {Array.from({ length: 2}).map(
-          (_, index) => (
-            <span key={index}>
-              <button
-                className={styles.pageNumber}
-                onClick={() => paginate(index + 1)}
-              >
-                {index + 1}
-              </button>
-            </span>
-          )
-        )}
+        {Array.from({ length: totalPages }).map((_, index) => (
+          <span key={index}>
+            <button
+              className={styles.pageNumber}
+              onClick={() => paginate(index + 1)}
+            >
+              {index + 1}
+            </button>
+          </span>
+        ))}
       </div>
 
       {loading && (
