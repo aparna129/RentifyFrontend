@@ -34,9 +34,11 @@ function PropertyList() {
       axios
         .post(`${baseUrl}getAllProperties`, selectedFilters)
         .then((response) => {
-          const { properties } = response.data;
-          setLoading(false);
-          setProperties(properties);
+          if (response.data && response.data.properties) {
+            const { properties } = response.data;
+            setLoading(false);
+            setProperties(properties);
+          }
         })
         .catch((error) => {
           if (
