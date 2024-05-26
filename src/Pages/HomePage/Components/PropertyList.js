@@ -128,7 +128,7 @@ function PropertyList() {
     setLikeBtnClicked(!likeBtnClicked);
 
     const storedLikes = JSON.parse(localStorage.getItem("likes")) || {};
-    
+
     const status = storedLikes[propertyId] === "like" ? "dislike" : "like";
 
     const updatedLikes = { ...storedLikes, [propertyId]: status };
@@ -302,12 +302,12 @@ function PropertyList() {
                 I'm interested
               </button>
 
-              {sellers[property._id] && (
+              {sellers[property && property._id] && (
                 <div style={{ marginTop: "2vh" }}>
                   <p>
                     <span className={styles.field}>Seller:</span>{" "}
-                    {sellers[property._id].firstName}{" "}
-                    {sellers[property._id].lastName}
+                    {sellers[property && property._id].firstName}{" "}
+                    {sellers[property && property._id].lastName}
                   </p>
                   <p style={{ marginTop: "0.5vh" }}>
                     <span className={styles.field}>Email: </span>
@@ -319,10 +319,11 @@ function PropertyList() {
 
             <div>
               <img
-                onClick={() => handleLikeBtn(property._id)}
+                onClick={() => handleLikeBtn(property && property._id)}
                 src={
-                  JSON.parse(localStorage.getItem("likes"))[property._id] ===
-                  "like"
+                  JSON.parse(localStorage.getItem("likes"))[
+                    property && property._id
+                  ] === "like"
                     ? hearticonlike
                     : hearticondislike
                 }
