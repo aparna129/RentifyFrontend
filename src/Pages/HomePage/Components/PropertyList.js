@@ -9,14 +9,10 @@ import hearticondislike from "../../../images/heart-icon-dislike.png";
 import hearticonlike from "../../../images/heart-icon-like.png";
 
 function PropertyList() {
-  const [properties, setProperties] = useState(null);
+  const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(false);
   const [sellers, setSellers] = useState({});
-
-  const baseUrl = localStorage.getItem("baseUrl") || "";
-  if (!baseUrl) {
-    toast.error("Base URL is missing. Please set it in localStorage.");
-  }
+  const baseUrl = localStorage.getItem("baseUrl");
 
   const [selectedFilters, setSelectedFilters] = useState({
     state: "",
@@ -34,23 +30,12 @@ function PropertyList() {
       axios
         .post(`${baseUrl}getAllProperties`, selectedFilters)
         .then((response) => {
-          if (response.data && response.data.properties) {
-            const { properties } = response.data;
-            setLoading(false);
-            setProperties(properties);
-          }
+          const { properties } = response.data;
+          setLoading(false);
+          setProperties(properties || []);
         })
         .catch((error) => {
-          if (
-            error.response &&
-            error.response.data &&
-            error.response.data.error
-          ) {
-            toast.error(error.response.data.error);
-          } else {
-            toast.error("Oops! An error occurred. Try again after some time");
-          }
-          console.log(error);
+          handleError(error);
           setLoading(false);
         });
     };
@@ -58,6 +43,15 @@ function PropertyList() {
     fetchProperties();
     // eslint-disable-next-line
   }, [selectedFilters]);
+
+  const handleError = (error) => {
+    if (error.response && error.response.data && error.response.data.error) {
+      toast.error(error.response.data.error);
+    } else {
+      toast.error("Oops! An error occurred. Try again after some time");
+    }
+    console.error(error);
+  };
 
   const token = localStorage.getItem("jwttoken");
   const isLoggedIn = useAuthentication(token);
@@ -83,24 +77,13 @@ function PropertyList() {
           [property._id]: user,
         }));
       })
-      .catch((error) => {
-        if (
-          error.response &&
-          error.response.data &&
-          error.response.data.error
-        ) {
-          toast.error(error.response.data.error);
-        } else {
-          toast.error("Oops! An error occurred. Try again after some time");
-        }
-        console.log(error);
-      });
+      .catch(handleError);
 
     const emailData = {
       buyerEmail: email,
-      sellerEmail: currentSeller && currentSeller.email,
-      sellerContact: currentSeller && currentSeller.contact,
-      propertyDetails: property ? property : null,
+      sellerEmail: currentSeller?.email || "",
+      sellerContact: currentSeller?.contact || "",
+      propertyDetails: property,
     };
 
     axios
@@ -109,18 +92,7 @@ function PropertyList() {
         const { message } = response.data;
         toast.success(message);
       })
-      .catch((error) => {
-        if (
-          error.response &&
-          error.response.data &&
-          error.response.data.error
-        ) {
-          toast.success(error.response.data.error);
-        } else {
-          toast.error("Oops! An error occurred. Try again after some time");
-        }
-        console.log(error);
-      });
+      .catch(handleError);
   };
 
   const [likeBtnClicked, setLikeBtnClicked] = useState(false);
@@ -134,11 +106,8 @@ function PropertyList() {
     setLikeBtnClicked(!likeBtnClicked);
 
     const storedLikes = JSON.parse(localStorage.getItem("likes")) || {};
-
     const status = storedLikes[propertyId] === "like" ? "dislike" : "like";
-
     const updatedLikes = { ...storedLikes, [propertyId]: status };
-
     localStorage.setItem("likes", JSON.stringify(updatedLikes));
 
     const updatedProperties = properties.map((property) =>
@@ -159,17 +128,8 @@ function PropertyList() {
         toast.success(message);
       })
       .catch((error) => {
-        if (
-          error.response &&
-          error.response.data &&
-          error.response.data.error
-        ) {
-          toast.error(error.response.data.error);
-        } else {
-          toast.error("Oops! An error occurred. Try again after some time");
-        }
-        console.log(error);
-
+        handleError(error);
+        // Revert the likes change on error
         setProperties(properties);
         const rolledBackLikes = {
           ...storedLikes,
@@ -183,15 +143,11 @@ function PropertyList() {
   const propertiesPerPage = 1;
 
   const indexOfLastProperty = currentPage * propertiesPerPage;
-
   const indexOfFirstProperty = indexOfLastProperty - propertiesPerPage;
 
-  const currentProperties =
-    properties && properties.slice(indexOfFirstProperty, indexOfLastProperty);
+  const currentProperties = properties.slice(indexOfFirstProperty, indexOfLastProperty);
 
-  const totalPages = Math.ceil(
-    properties ? properties.length / propertiesPerPage : 0
-  );
+  const totalPages = Math.ceil(properties.length / propertiesPerPage);
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
@@ -259,91 +215,94 @@ function PropertyList() {
         </div>
       </div>
 
-      {currentProperties &&
-        currentProperties.map((property) => (
-          <div className={styles.property} key={property._id}>
-            <div>
-              <p className={styles.fieldLine}>
-                <span className={styles.field}>State:</span> {property.state}
-              </p>
-              <p className={styles.fieldLine}>
-                <span className={styles.field}>City:</span> {property.city}
-              </p>
-              <p className={styles.fieldLine}>
-                <span className={styles.field}>Area: </span>
-                {property.area}
-              </p>
-              <p className={styles.fieldLine}>
-                <span className={styles.field}>Number of Bedrooms:</span>{" "}
-                {property.noOfBedrooms}
-              </p>
-              <p className={styles.fieldLine}>
-                <span className={styles.field}>Number of Bathrooms: </span>
-                {property.noOfBathrooms}
-              </p>
-              <p className={styles.fieldLine}>
-                <span className={styles.field}>Number of Balconies: </span>
-                {property.noOfBalconies}
-              </p>
-              <p className={styles.fieldLine}>
-                <span className={styles.field}>
-                  Number of Hospitals Nearby:
-                </span>{" "}
-                {property.noOfHospitalsNearby}
-              </p>
-              <p className={styles.fieldLine}>
-                <span className={styles.field}>Square Footage:</span>{" "}
-                {property.squareFootage}
-              </p>
-              <p className={styles.fieldLine}>
-                <span className={styles.field}>Price:</span> {property.price}
-              </p>
-            </div>
-
-            <div>
-              <button
-                className={styles.btn}
-                onClick={() => handleInterestedBtn(property)}
-              >
-                I'm interested
-              </button>
-
-              {sellers[property && property._id] && (
-                <div style={{ marginTop: "2vh" }}>
-                  <p>
-                    <span className={styles.field}>Seller:</span>{" "}
-                    {sellers[property && property._id].firstName}{" "}
-                    {sellers[property && property._id].lastName}
-                  </p>
-                  <p style={{ marginTop: "0.5vh" }}>
-                    <span className={styles.field}>Email: </span>
-                    {sellers[property._id].email}
-                  </p>
-                </div>
-              )}
-            </div>
-
-            <div>
-              <img
-                onClick={() => handleLikeBtn(property && property._id)}
-                src={
-                  JSON.parse(localStorage.getItem("likes"))[
-                    property && property._id
-                  ] === "like"
-                    ? hearticonlike
-                    : hearticondislike
-                }
-                style={{ height: "6vh", width: "3.5vw", cursor: "pointer" }}
-                alt="Like Icon"
-              ></img>
-
-              <p style={{ marginLeft: "1.2vw" }}>{property.likes || 0}</p>
-            </div>
+      {currentProperties.map((property) => (
+        <div className={styles.property} key={property._id}>
+          <div>
+            <p className={styles.fieldLine}>
+              <span className={styles.field}>State:</span> {property.state}
+            </p>
+            <p className={styles.fieldLine}>
+              <span className={styles.field}>City:</span> {property.city}
+            </p>
+            <p className={styles.fieldLine}>
+              <span className={styles.field}>Area: </span>
+              {property.area}
+            </p>
+            <p className={styles.fieldLine}>
+              <span className={styles.field}>Number of Bedrooms:</span>{" "}
+              {property.noOfBedrooms}
+            </p>
+            <p className={styles.fieldLine}>
+              <span className={styles.field}>Number of Bathrooms: </span>
+              {property.noOfBathrooms}
+            </p>
+            <p className={styles.fieldLine}>
+              <span className={styles.field}>Number of Balconies: </span>
+              {property.noOfBalconies}
+            </p>
+            <p className={styles.fieldLine}>
+              <span className={styles.field}>
+                Number of Hospitals Nearby:
+              </span>{" "}
+              {property.noOfHospitalsNearby}
+            </p>
+            <p className={styles.fieldLine}>
+              <span className={styles.field}>
+                Number of Schools Nearby:{" "}
+              </span>
+              {property.noOfSchoolsNearby}
+            </p>
+            <p className={styles.fieldLine}>
+              <span className={styles.field}>Price: </span>
+              {property.price}
+            </p>
+            <p className={styles.fieldLine}>
+              <span className={styles.field}>Owner:</span> {property.owner}
+            </p>
           </div>
-        ))}
+
+          <div>
+            <button
+              className={styles.btn}
+              onClick={() => handleInterestedBtn(property)}
+            >
+              I'm interested
+            </button>
+
+            {sellers[property._id] && (
+              <div style={{ marginTop: "2vh" }}>
+                <p>
+                  <span className={styles.field}>Seller:</span>{" "}
+                  {sellers[property._id].firstName}{" "}
+                  {sellers[property._id].lastName}
+                </p>
+                <p style={{ marginTop: "0.5vh" }}>
+                  <span className={styles.field}>Email: </span>
+                  {sellers[property._id].email}
+                </p>
+              </div>
+            )}
+          </div>
+
+          <div>
+            <img
+              onClick={() => handleLikeBtn(property._id)}
+              src={
+                JSON.parse(localStorage.getItem("likes"))[property._id] ===
+                "like"
+                  ? hearticonlike
+                  : hearticondislike
+              }
+              style={{ height: "6vh", width: "3.5vw", cursor: "pointer" }}
+              alt="Like Icon"
+            />
+            <p style={{ marginLeft: "1.2vw" }}>{property.likes || 0}</p>
+          </div>
+        </div>
+      ))}
 
       <div style={{ textAlign: "center" }}>
-        {Array.from({ length: totalPages }).map((_, index) => (
+        {Array.from({ length: totalPages > 0 ? totalPages : 1 }).map((_, index) => (
           <span key={index}>
             <button
               className={styles.pageNumber}
@@ -356,9 +315,8 @@ function PropertyList() {
       </div>
 
       {loading && (
-        <div className={styles.loaderContainer}>
-          <div className={styles.loaderBackground} />
-          <ClipLoader color={"black"} loading={loading} />
+        <div className={styles.loading}>
+          <ClipLoader color={"#0f3460"} loading={true} size={50} />
         </div>
       )}
     </div>
