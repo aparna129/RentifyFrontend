@@ -12,7 +12,11 @@ function PropertyList() {
   const [properties, setProperties] = useState(null);
   const [loading, setLoading] = useState(false);
   const [sellers, setSellers] = useState({});
-  const baseUrl = localStorage.getItem("baseUrl");
+
+  const baseUrl = localStorage.getItem("baseUrl") || "";
+  if (!baseUrl) {
+    toast.error("Base URL is missing. Please set it in localStorage.");
+  }
 
   const [selectedFilters, setSelectedFilters] = useState({
     state: "",
@@ -94,7 +98,7 @@ function PropertyList() {
       buyerEmail: email,
       sellerEmail: currentSeller && currentSeller.email,
       sellerContact: currentSeller && currentSeller.contact,
-      propertyDetails: property,
+      propertyDetails: property ? property : null,
     };
 
     axios
