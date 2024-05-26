@@ -343,7 +343,7 @@ function PropertyList() {
         ))}
 
       <div style={{ textAlign: "center" }}>
-        {Array.from({ length: totalPages > 0 ? totalPages : 0 }).map(
+        {Array.from({ length: 2}).map(
           (_, index) => (
             <span key={index}>
               <button
