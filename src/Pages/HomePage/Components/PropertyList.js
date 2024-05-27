@@ -9,7 +9,7 @@ import hearticondislike from "../../../images/heart-icon-dislike.png";
 import hearticonlike from "../../../images/heart-icon-like.png";
 
 function PropertyList() {
-  const [properties, setProperties] = useState(null);
+  const [properties, setProperties] = useState();
   const [loading, setLoading] = useState(false);
   const [sellers, setSellers] = useState({});
 
