@@ -126,15 +126,11 @@ function PropertyList() {
       });
   };
 
-  const [likeBtnClicked, setLikeBtnClicked] = useState(false);
-
   const handleLikeBtn = (propertyId) => {
     if (!isLoggedIn) {
       navigate("/login");
       return;
     }
-
-    setLikeBtnClicked(!likeBtnClicked);
 
     const storedLikes = JSON.parse(localStorage.getItem("likes")) || {};
 
@@ -185,16 +181,16 @@ function PropertyList() {
       });
   };
 
-  // eslint-disable-next-line 
+  
   const [currentPage, setCurrentPage] = useState(1);
   const propertiesPerPage = 1;
 
- /* const indexOfLastProperty = currentPage * propertiesPerPage;
+  const indexOfLastProperty = currentPage * propertiesPerPage;
 
   const indexOfFirstProperty = indexOfLastProperty - propertiesPerPage;
 
   const currentProperties =
-    properties && properties.slice(indexOfFirstProperty, indexOfLastProperty);*/
+    properties && properties.slice(indexOfFirstProperty, indexOfLastProperty);
 
   const totalPages = Math.ceil(
     properties ? properties.length / propertiesPerPage : 0
@@ -266,8 +262,8 @@ function PropertyList() {
         </div>
       </div>
 
-      {properties &&
-        properties.map((property) => (
+      {currentProperties &&
+        currentProperties.map((property) => (
           <div className={styles.property} key={property._id}>
             <div>
               <p className={styles.fieldLine}>
