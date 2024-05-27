@@ -136,7 +136,7 @@ function PropertyList() {
 
     const status = storedLikes[propertyId] === "like" ? "dislike" : "like";
 
-    const updatedLikes = { ...storedLikes, [propertyId]: status };
+    const updatedLikes = { ...storedLikes, [property && propertyId]: status };
 
     localStorage.setItem("likes", JSON.stringify(updatedLikes));
 
