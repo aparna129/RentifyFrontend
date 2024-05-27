@@ -21,7 +21,6 @@ function PropertyList() {
   const [selectedFilters, setSelectedFilters] = useState({
     state: "",
     city: "",
-    price: "",
   });
 
   const updateSelectedFilters = (field, value) => {
@@ -127,59 +126,58 @@ function PropertyList() {
       });
   };
 
+  const [userLikes, setUserLikes] = useState({});
+  const userId = localStorage.getItem("userId");
+
+  useEffect(() => {
+    const savedLikes = JSON.parse(localStorage.getItem("userLikes")) || {};
+    setUserLikes(savedLikes);
+  }, []);
+
   const handleLikeBtn = (propertyId) => {
     if (!isLoggedIn) {
       navigate("/login");
       return;
     }
 
-    const storedLikes = JSON.parse(localStorage.getItem("likes")) || {};
+    const userLikesCopy = { ...userLikes };
+  const userPropertyLikes = userLikesCopy[userId] || {};
+  const status = userPropertyLikes[propertyId] === "like" ? "dislike" : "like";
 
-    const status = storedLikes[propertyId] === "like" ? "dislike" : "like";
+  userPropertyLikes[propertyId] = status;
+  userLikesCopy[userId] = userPropertyLikes;
+  
+  setUserLikes(userLikesCopy);
+  localStorage.setItem("userLikes", JSON.stringify(userLikesCopy));
 
-    const updatedLikes = { ...storedLikes, [propertyId]: status };
-
-    localStorage.setItem("likes", JSON.stringify(updatedLikes));
-
-    const updatedProperties =
-      properties &&
-      properties.map((property) =>
-        property._id === propertyId
-          ? {
-              ...property,
-              likes:
-                status === "like" ? property.likes + 1 : property.likes - 1,
-            }
-          : property
-      );
-    setProperties(updatedProperties);
-
-    const url = `${baseUrl}${status}Property/${propertyId}`;
-    axios
-      .post(url)
-      .then((response) => {
-        const { message } = response.data;
-        toast.success(message);
-      })
-      .catch((error) => {
-        if (
-          error.response &&
-          error.response.data &&
-          error.response.data.error
-        ) {
-          toast.error(error.response.data.error);
-        } else {
-          toast.error("Oops! An error occurred. Try again after some time");
+  const updatedProperties = properties.map((property) =>
+    property._id === propertyId
+      ? {
+          ...property,
+          likes:
+            status === "like" ? property.likes + 1 : property.likes - 1,
         }
-        console.log(error);
+      : property
+  );
+  setProperties(updatedProperties);
 
-        setProperties(properties);
-        const rolledBackLikes = {
-          ...storedLikes,
-          [propertyId]: status === "like" ? "dislike" : "like",
-        };
-        localStorage.setItem("likes", JSON.stringify(rolledBackLikes));
-      });
+  const url = `${baseUrl}${status}Property/${propertyId}`;
+  axios
+    .post(url)
+    .then((response) => {
+      const { message } = response.data;
+      toast.success(message);
+    })
+    .catch((error) => {
+      toast.error(error.response.data?.error || "Oops! An error occurred. Try again after some time");
+
+      const rollbackStatus = status === "like" ? "dislike" : "like";
+      userPropertyLikes[propertyId] = rollbackStatus;
+      userLikesCopy[userId] = userPropertyLikes;
+      setUserLikes(userLikesCopy);
+      localStorage.setItem("userLikes", JSON.stringify(userLikesCopy));
+      setProperties(properties);
+    });
   };
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -189,7 +187,10 @@ function PropertyList() {
 
   const indexOfFirstProperty = indexOfLastProperty - propertiesPerPage;
 
-  const currentProperties = properties.slice(indexOfFirstProperty, indexOfLastProperty);
+  const currentProperties = properties.slice(
+    indexOfFirstProperty,
+    indexOfLastProperty
+  );
 
   const totalPages = Math.ceil(
     properties ? properties.length / propertiesPerPage : 0
@@ -240,112 +241,93 @@ function PropertyList() {
             <option value="Pune">Pune</option>
           </select>
         </div>
-        <div>
-          <select
-            className={styles.selectBtn}
-            onChange={(e) => {
-              updateSelectedFilters("price", e.target.value);
-            }}
-          >
-            <option disabled selected style={{ display: "none" }}>
-              Price
-            </option>
-            <option value="1000-5000">1,000-5,000</option>
-            <option value="5000-10000">5,000-10,000</option>
-            <option value="10000-15000">10,000-15,000</option>
-            <option value="15000-20000">15,000-20,000</option>
-            <option value="20000-25000">20,000-25,000</option>
-            <option value="25000-30000">25,000-30,000</option>
-            <option value=">30000">Greater than 30,000</option>
-          </select>
-        </div>
       </div>
 
       {currentProperties &&
-    currentProperties.map((property) => (
-        property && (
-            <div className={styles.property} key={property._id}>
+        currentProperties.map(
+          (property) =>
+            property && (
+              <div className={styles.property} key={property._id}>
                 <div>
-                    <p className={styles.fieldLine}>
-                        <span className={styles.field}>State:</span> {property.state}
-                    </p>
-                    <p className={styles.fieldLine}>
-                        <span className={styles.field}>City:</span> {property.city}
-                    </p>
-                    <p className={styles.fieldLine}>
-                        <span className={styles.field}>Area: </span>
-                        {property.area}
-                    </p>
-                    <p className={styles.fieldLine}>
-                        <span className={styles.field}>Number of Bedrooms:</span>{" "}
-                        {property.noOfBedrooms}
-                    </p>
-                    <p className={styles.fieldLine}>
-                        <span className={styles.field}>Number of Bathrooms: </span>
-                        {property.noOfBathrooms}
-                    </p>
-                    <p className={styles.fieldLine}>
-                        <span className={styles.field}>Number of Balconies: </span>
-                        {property.noOfBalconies}
-                    </p>
-                    <p className={styles.fieldLine}>
-                        <span className={styles.field}>
-                            Number of Hospitals Nearby:
-                        </span>{" "}
-                        {property.noOfHospitalsNearby}
-                    </p>
-                    <p className={styles.fieldLine}>
-                        <span className={styles.field}>Square Footage:</span>{" "}
-                        {property.squareFootage}
-                    </p>
-                    <p className={styles.fieldLine}>
-                        <span className={styles.field}>Price:</span> {property.price}
-                    </p>
+                  <p className={styles.fieldLine}>
+                    <span className={styles.field}>State:</span>{" "}
+                    {property.state}
+                  </p>
+                  <p className={styles.fieldLine}>
+                    <span className={styles.field}>City:</span> {property.city}
+                  </p>
+                  <p className={styles.fieldLine}>
+                    <span className={styles.field}>Area: </span>
+                    {property.area}
+                  </p>
+                  <p className={styles.fieldLine}>
+                    <span className={styles.field}>Number of Bedrooms:</span>{" "}
+                    {property.noOfBedrooms}
+                  </p>
+                  <p className={styles.fieldLine}>
+                    <span className={styles.field}>Number of Bathrooms: </span>
+                    {property.noOfBathrooms}
+                  </p>
+                  <p className={styles.fieldLine}>
+                    <span className={styles.field}>Number of Balconies: </span>
+                    {property.noOfBalconies}
+                  </p>
+                  <p className={styles.fieldLine}>
+                    <span className={styles.field}>
+                      Number of Hospitals Nearby:
+                    </span>{" "}
+                    {property.noOfHospitalsNearby}
+                  </p>
+                  <p className={styles.fieldLine}>
+                    <span className={styles.field}>Square Footage:</span>{" "}
+                    {property.squareFootage}
+                  </p>
+                  <p className={styles.fieldLine}>
+                    <span className={styles.field}>Price:</span>{" "}
+                    {property.price}
+                  </p>
                 </div>
 
                 <div>
-                    <button
-                        className={styles.btn}
-                        onClick={() => handleInterestedBtn(property)}
-                    >
-                        I'm interested
-                    </button>
+                  <button
+                    className={styles.btn}
+                    onClick={() => handleInterestedBtn(property)}
+                  >
+                    I'm interested
+                  </button>
 
-                    {sellers[property && property._id] && ( // Check if sellers[property._id] is not null or undefined
-                        <div style={{ marginTop: "2vh" }}>
-                            <p>
-                                <span className={styles.field}>Seller:</span>{" "}
-                                {sellers[property._id]?.firstName}{" "}
-                                {sellers[property._id]?.lastName}
-                            </p>
-                            <p style={{ marginTop: "0.5vh" }}>
-                                <span className={styles.field}>Email: </span>
-                                {sellers[property._id]?.email}
-                            </p>
-                        </div>
-                    )}
+                  {sellers[property && property._id] && (
+                    <div style={{ marginTop: "2vh" }}>
+                      <p>
+                        <span className={styles.field}>Seller:</span>{" "}
+                        {sellers[property._id]?.firstName}{" "}
+                        {sellers[property._id]?.lastName}
+                      </p>
+                      <p style={{ marginTop: "0.5vh" }}>
+                        <span className={styles.field}>Email: </span>
+                        {sellers[property._id]?.email}
+                      </p>
+                    </div>
+                  )}
                 </div>
 
                 <div>
-                    <img
-                        onClick={() => handleLikeBtn(property && property._id)}
-                        src={
-                            JSON.parse(localStorage.getItem("likes"))?.[
-                                property && property._id
-                            ] === "like"
-                                ? hearticonlike
-                                : hearticondislike
-                        }
-                        style={{ height: "6vh", width: "3.5vw", cursor: "pointer" }}
-                        alt="Like Icon"
-                    ></img>
+                  <img
+                    onClick={() => handleLikeBtn(property && property._id)}
+                    src={
+                      (userLikes[userId] && userLikes[userId][property._id]) === "like"
+                        ? hearticonlike
+                        : hearticondislike
+                    }
+                    style={{ height: "6vh", width: "3.5vw", cursor: "pointer" }}
+                    alt="Like Icon"
+                  ></img>
 
-                    <p style={{ marginLeft: "1.2vw" }}>{property.likes || 0}</p>
+                  <p style={{ marginLeft: "1.2vw" }}>{property.likes || 0}</p>
                 </div>
-            </div>
-        )
-    ))}
-
+              </div>
+            )
+        )}
 
       <div style={{ textAlign: "center" }}>
         {Array.from({ length: totalPages }).map((_, index) => (
