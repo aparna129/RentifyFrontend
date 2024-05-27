@@ -36,6 +36,7 @@ function PropertyList() {
         .then((response) => {
           if (response.data && response.data.properties) {
             const { properties } = response.data;
+            console.log(properties);
             setLoading(false);
             setProperties(properties);
           }
