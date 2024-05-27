@@ -5,13 +5,12 @@ import ClipLoader from "react-spinners/ClipLoader";
 import styles from "../PropertyList.module.css";
 import useAuthentication from "../../Authentication";
 import { useNavigate } from "react-router-dom";
-/*import hearticondislike from "../../../images/heart-icon-dislike.png";
-import hearticonlike from "../../../images/heart-icon-like.png";*/
+import hearticondislike from "../../../images/heart-icon-dislike.png";
+import hearticonlike from "../../../images/heart-icon-like.png";
 
 function PropertyList() {
-  const [properties, setProperties] = useState(null);
+  const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(false);
-  // eslint-disable-next-line 
   const [sellers, setSellers] = useState({});
 
   const baseUrl = localStorage.getItem("baseUrl") || "";
@@ -69,7 +68,6 @@ function PropertyList() {
 
   const [currentSeller, setCurrentSeller] = useState(null);
 
-  // eslint-disable-next-line 
   const handleInterestedBtn = (property) => {
     if (!isLoggedIn) {
       navigate("/login");
@@ -128,7 +126,6 @@ function PropertyList() {
       });
   };
 
-  // eslint-disable-next-line 
   const handleLikeBtn = (propertyId) => {
     if (!isLoggedIn) {
       navigate("/login");
@@ -184,7 +181,6 @@ function PropertyList() {
       });
   };
 
-  
   const [currentPage, setCurrentPage] = useState(1);
   const propertiesPerPage = 1;
 
@@ -192,9 +188,7 @@ function PropertyList() {
 
   const indexOfFirstProperty = indexOfLastProperty - propertiesPerPage;
 
-  // eslint-disable-next-line 
-  const currentProperties =
-    properties && properties.slice(indexOfFirstProperty, indexOfLastProperty);
+  const currentProperties = properties.slice(indexOfFirstProperty, indexOfLastProperty);
 
   const totalPages = Math.ceil(
     properties ? properties.length / propertiesPerPage : 0
@@ -266,7 +260,89 @@ function PropertyList() {
         </div>
       </div>
 
-    
+      {currentProperties &&
+        currentProperties.map((property) => (
+          <div className={styles.property} key={property._id}>
+            <div>
+              <p className={styles.fieldLine}>
+                <span className={styles.field}>State:</span> {property.state}
+              </p>
+              <p className={styles.fieldLine}>
+                <span className={styles.field}>City:</span> {property.city}
+              </p>
+              <p className={styles.fieldLine}>
+                <span className={styles.field}>Area: </span>
+                {property.area}
+              </p>
+              <p className={styles.fieldLine}>
+                <span className={styles.field}>Number of Bedrooms:</span>{" "}
+                {property.noOfBedrooms}
+              </p>
+              <p className={styles.fieldLine}>
+                <span className={styles.field}>Number of Bathrooms: </span>
+                {property.noOfBathrooms}
+              </p>
+              <p className={styles.fieldLine}>
+                <span className={styles.field}>Number of Balconies: </span>
+                {property.noOfBalconies}
+              </p>
+              <p className={styles.fieldLine}>
+                <span className={styles.field}>
+                  Number of Hospitals Nearby:
+                </span>{" "}
+                {property.noOfHospitalsNearby}
+              </p>
+              <p className={styles.fieldLine}>
+                <span className={styles.field}>Square Footage:</span>{" "}
+                {property.squareFootage}
+              </p>
+              <p className={styles.fieldLine}>
+                <span className={styles.field}>Price:</span> {property.price}
+              </p>
+            </div>
+
+            <div>
+              <button
+                className={styles.btn}
+                onClick={() => handleInterestedBtn(property)}
+              >
+                I'm interested
+              </button>
+
+              {sellers[property && property._id] && (
+                <div style={{ marginTop: "2vh" }}>
+                  <p>
+                    <span className={styles.field}>Seller:</span>{" "}
+                    {sellers[property && property._id].firstName}{" "}
+                    {sellers[property && property._id].lastName}
+                  </p>
+                  <p style={{ marginTop: "0.5vh" }}>
+                    <span className={styles.field}>Email: </span>
+                    {sellers[property._id].email}
+                  </p>
+                </div>
+              )}
+            </div>
+
+            <div>
+              <img
+                onClick={() => handleLikeBtn(property && property._id)}
+                src={
+                  JSON.parse(localStorage.getItem("likes"))[
+                    property && property._id
+                  ] === "like"
+                    ? hearticonlike
+                    : hearticondislike
+                }
+                style={{ height: "6vh", width: "3.5vw", cursor: "pointer" }}
+                alt="Like Icon"
+              ></img>
+
+              <p style={{ marginLeft: "1.2vw" }}>{property.likes || 0}</p>
+            </div>
+          </div>
+        ))}
+
       <div style={{ textAlign: "center" }}>
         {Array.from({ length: totalPages }).map((_, index) => (
           <span key={index}>
