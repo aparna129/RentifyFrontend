@@ -136,7 +136,7 @@ function PropertyList() {
 
     const status = storedLikes[propertyId] === "like" ? "dislike" : "like";
 
-    const updatedLikes = { ...storedLikes, [property && propertyId]: status };
+    const updatedLikes = { ...storedLikes, [propertyId]: status };
 
     localStorage.setItem("likes", JSON.stringify(updatedLikes));
 
@@ -181,7 +181,6 @@ function PropertyList() {
       });
   };
 
-  
   const [currentPage, setCurrentPage] = useState(1);
   const propertiesPerPage = 1;
 
@@ -192,10 +191,11 @@ function PropertyList() {
   const currentProperties =
     properties && properties.slice(indexOfFirstProperty, indexOfLastProperty);
 
+  // eslint-disable-next-line
   const totalPages = Math.ceil(
     properties ? properties.length / propertiesPerPage : 0
   );
-
+  // eslint-disable-next-line
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   return (
@@ -344,19 +344,6 @@ function PropertyList() {
             </div>
           </div>
         ))}
-
-      <div style={{ textAlign: "center" }}>
-        {Array.from({ length: totalPages }).map((_, index) => (
-          <span key={index}>
-            <button
-              className={styles.pageNumber}
-              onClick={() => paginate(index + 1)}
-            >
-              {index + 1}
-            </button>
-          </span>
-        ))}
-      </div>
 
       {loading && (
         <div className={styles.loaderContainer}>
