@@ -9,7 +9,7 @@ import hearticondislike from "../../../images/heart-icon-dislike.png";
 import hearticonlike from "../../../images/heart-icon-like.png";
 
 function PropertyList() {
-  const [properties, setProperties] = useState();
+  const [properties, setProperties] = useState(null);
   const [loading, setLoading] = useState(false);
   const [sellers, setSellers] = useState({});
 
@@ -73,14 +73,17 @@ function PropertyList() {
       navigate("/login");
       return;
     }
+
+    const userId = property && property.userId;
+
     axios
-      .get(`${baseUrl}getUserDetails/${property.userId}`)
+      .get(`${baseUrl}getUserDetails/${userId}`)
       .then((response) => {
         const { user } = response.data;
         setCurrentSeller(user);
         setSellers((prevSellers) => ({
           ...prevSellers,
-          [property._id]: user,
+          [property && property._id]: user,
         }));
       })
       .catch((error) => {
