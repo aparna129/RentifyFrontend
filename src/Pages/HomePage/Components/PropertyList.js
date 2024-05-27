@@ -144,7 +144,7 @@ function PropertyList() {
 
     localStorage.setItem("likes", JSON.stringify(updatedLikes));
 
-    const updatedProperties = properties.map((property) =>
+    const updatedProperties = properties && properties.map((property) =>
       property._id === propertyId
         ? {
             ...property,
