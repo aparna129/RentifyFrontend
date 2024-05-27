@@ -263,87 +263,90 @@ function PropertyList() {
       </div>
 
       {properties &&
-        properties.map((property) => (
-          <div className={styles.property} key={property._id}>
-            <div>
-              <p className={styles.fieldLine}>
-                <span className={styles.field}>State:</span> {property.state}
-              </p>
-              <p className={styles.fieldLine}>
-                <span className={styles.field}>City:</span> {property.city}
-              </p>
-              <p className={styles.fieldLine}>
-                <span className={styles.field}>Area: </span>
-                {property.area}
-              </p>
-              <p className={styles.fieldLine}>
-                <span className={styles.field}>Number of Bedrooms:</span>{" "}
-                {property.noOfBedrooms}
-              </p>
-              <p className={styles.fieldLine}>
-                <span className={styles.field}>Number of Bathrooms: </span>
-                {property.noOfBathrooms}
-              </p>
-              <p className={styles.fieldLine}>
-                <span className={styles.field}>Number of Balconies: </span>
-                {property.noOfBalconies}
-              </p>
-              <p className={styles.fieldLine}>
-                <span className={styles.field}>
-                  Number of Hospitals Nearby:
-                </span>{" "}
-                {property.noOfHospitalsNearby}
-              </p>
-              <p className={styles.fieldLine}>
-                <span className={styles.field}>Square Footage:</span>{" "}
-                {property.squareFootage}
-              </p>
-              <p className={styles.fieldLine}>
-                <span className={styles.field}>Price:</span> {property.price}
-              </p>
-            </div>
-
-            <div>
-              <button
-                className={styles.btn}
-                onClick={() => handleInterestedBtn(property)}
-              >
-                I'm interested
-              </button>
-
-              {sellers[property && property._id] && (
-                <div style={{ marginTop: "2vh" }}>
-                  <p>
-                    <span className={styles.field}>Seller:</span>{" "}
-                    {sellers[property && property._id].firstName}{" "}
-                    {sellers[property && property._id].lastName}
-                  </p>
-                  <p style={{ marginTop: "0.5vh" }}>
-                    <span className={styles.field}>Email: </span>
-                    {sellers[property._id].email}
-                  </p>
+    properties.map((property) => (
+        property && ( // Check if property is not null or undefined
+            <div className={styles.property} key={property._id}>
+                <div>
+                    <p className={styles.fieldLine}>
+                        <span className={styles.field}>State:</span> {property.state}
+                    </p>
+                    <p className={styles.fieldLine}>
+                        <span className={styles.field}>City:</span> {property.city}
+                    </p>
+                    <p className={styles.fieldLine}>
+                        <span className={styles.field}>Area: </span>
+                        {property.area}
+                    </p>
+                    <p className={styles.fieldLine}>
+                        <span className={styles.field}>Number of Bedrooms:</span>{" "}
+                        {property.noOfBedrooms}
+                    </p>
+                    <p className={styles.fieldLine}>
+                        <span className={styles.field}>Number of Bathrooms: </span>
+                        {property.noOfBathrooms}
+                    </p>
+                    <p className={styles.fieldLine}>
+                        <span className={styles.field}>Number of Balconies: </span>
+                        {property.noOfBalconies}
+                    </p>
+                    <p className={styles.fieldLine}>
+                        <span className={styles.field}>
+                            Number of Hospitals Nearby:
+                        </span>{" "}
+                        {property.noOfHospitalsNearby}
+                    </p>
+                    <p className={styles.fieldLine}>
+                        <span className={styles.field}>Square Footage:</span>{" "}
+                        {property.squareFootage}
+                    </p>
+                    <p className={styles.fieldLine}>
+                        <span className={styles.field}>Price:</span> {property.price}
+                    </p>
                 </div>
-              )}
-            </div>
 
-            <div>
-              <img
-                onClick={() => handleLikeBtn(property && property._id)}
-                src={
-                  JSON.parse(localStorage.getItem("likes"))[
-                    property && property._id
-                  ] === "like"
-                    ? hearticonlike
-                    : hearticondislike
-                }
-                style={{ height: "6vh", width: "3.5vw", cursor: "pointer" }}
-                alt="Like Icon"
-              ></img>
+                <div>
+                    <button
+                        className={styles.btn}
+                        onClick={() => handleInterestedBtn(property)}
+                    >
+                        I'm interested
+                    </button>
 
-              <p style={{ marginLeft: "1.2vw" }}>{property.likes || 0}</p>
+                    {sellers[property && property._id] && ( // Check if sellers[property._id] is not null or undefined
+                        <div style={{ marginTop: "2vh" }}>
+                            <p>
+                                <span className={styles.field}>Seller:</span>{" "}
+                                {sellers[property._id]?.firstName}{" "}
+                                {sellers[property._id]?.lastName}
+                            </p>
+                            <p style={{ marginTop: "0.5vh" }}>
+                                <span className={styles.field}>Email: </span>
+                                {sellers[property._id]?.email}
+                            </p>
+                        </div>
+                    )}
+                </div>
+
+                <div>
+                    <img
+                        onClick={() => handleLikeBtn(property && property._id)}
+                        src={
+                            JSON.parse(localStorage.getItem("likes"))?.[
+                                property && property._id
+                            ] === "like"
+                                ? hearticonlike
+                                : hearticondislike
+                        }
+                        style={{ height: "6vh", width: "3.5vw", cursor: "pointer" }}
+                        alt="Like Icon"
+                    ></img>
+
+                    <p style={{ marginLeft: "1.2vw" }}>{property.likes || 0}</p>
+                </div>
             </div>
-          </div>
-        ))}
+        )
+    ))}
+
 
       <div style={{ textAlign: "center" }}>
         {Array.from({ length: totalPages }).map((_, index) => (
