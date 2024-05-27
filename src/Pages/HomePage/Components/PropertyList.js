@@ -182,6 +182,7 @@ function PropertyList() {
       });
   };
 
+  // eslint-disable-next-line
   const [currentPage, setCurrentPage] = useState(1);
   const propertiesPerPage = 1;
 
@@ -192,11 +193,11 @@ function PropertyList() {
   const currentProperties =
     properties && properties.slice(indexOfFirstProperty, indexOfLastProperty);
 
-  const totalPages = Math.ceil(
+  /*const totalPages = Math.ceil(
     properties ? properties.length / propertiesPerPage : 0
   );
 
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);*/
 
   return (
     <div>
@@ -345,7 +346,7 @@ function PropertyList() {
           </div>
         ))}
 
-      <div style={{ textAlign: "center" }}>
+{/*<div style={{ textAlign: "center" }}>
         {Array.from({ length: totalPages }).map((_, index) => (
           <span key={index}>
             <button
@@ -356,7 +357,7 @@ function PropertyList() {
             </button>
           </span>
         ))}
-      </div>
+      </div>*/}
 
       {loading && (
         <div className={styles.loaderContainer}>
