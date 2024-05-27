@@ -189,7 +189,6 @@ function PropertyList() {
 
   const indexOfFirstProperty = indexOfLastProperty - propertiesPerPage;
 
-  // eslint-disable-next-line 
   const currentProperties = properties.slice(indexOfFirstProperty, indexOfLastProperty);
 
   const totalPages = Math.ceil(
@@ -262,9 +261,9 @@ function PropertyList() {
         </div>
       </div>
 
-      {properties &&
-    properties.map((property) => (
-        property && ( // Check if property is not null or undefined
+      {currentProperties &&
+    currentProperties.map((property) => (
+        property && (
             <div className={styles.property} key={property._id}>
                 <div>
                     <p className={styles.fieldLine}>
