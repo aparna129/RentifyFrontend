@@ -144,14 +144,17 @@ function PropertyList() {
 
     localStorage.setItem("likes", JSON.stringify(updatedLikes));
 
-    const updatedProperties = properties && properties.map((property) =>
-      property._id === propertyId
-        ? {
-            ...property,
-            likes: status === "like" ? property.likes + 1 : property.likes - 1,
-          }
-        : property
-    );
+    const updatedProperties =
+      properties &&
+      properties.map((property) =>
+        property._id === propertyId
+          ? {
+              ...property,
+              likes:
+                status === "like" ? property.likes + 1 : property.likes - 1,
+            }
+          : property
+      );
     setProperties(updatedProperties);
 
     const url = `${baseUrl}${status}Property/${propertyId}`;
@@ -182,22 +185,22 @@ function PropertyList() {
       });
   };
 
-  // eslint-disable-next-line
+  // eslint-disable-next-line 
   const [currentPage, setCurrentPage] = useState(1);
   const propertiesPerPage = 1;
 
-  const indexOfLastProperty = currentPage * propertiesPerPage;
+ /* const indexOfLastProperty = currentPage * propertiesPerPage;
 
   const indexOfFirstProperty = indexOfLastProperty - propertiesPerPage;
 
   const currentProperties =
-    properties && properties.slice(indexOfFirstProperty, indexOfLastProperty);
+    properties && properties.slice(indexOfFirstProperty, indexOfLastProperty);*/
 
-  /*const totalPages = Math.ceil(
+  const totalPages = Math.ceil(
     properties ? properties.length / propertiesPerPage : 0
   );
 
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);*/
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   return (
     <div>
@@ -263,8 +266,8 @@ function PropertyList() {
         </div>
       </div>
 
-      {currentProperties &&
-        currentProperties.map((property) => (
+      {properties &&
+        properties.map((property) => (
           <div className={styles.property} key={property._id}>
             <div>
               <p className={styles.fieldLine}>
@@ -346,7 +349,7 @@ function PropertyList() {
           </div>
         ))}
 
-{/*<div style={{ textAlign: "center" }}>
+      <div style={{ textAlign: "center" }}>
         {Array.from({ length: totalPages }).map((_, index) => (
           <span key={index}>
             <button
@@ -357,7 +360,7 @@ function PropertyList() {
             </button>
           </span>
         ))}
-      </div>*/}
+      </div>
 
       {loading && (
         <div className={styles.loaderContainer}>
